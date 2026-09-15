@@ -37,12 +37,12 @@ async function runGemini(stage: string, systemPrompt: string, input: unknown) {
     `\nINPUT:\n${JSON.stringify(input, null, 2)}`,
   ].join("\n");
 
-  const interaction: any = await ai.interactions.create({
+  const response = await ai.models.generateContent({
     model: process.env.GEMINI_MODEL || "gemini-3.6-flash",
-    input: combined,
-    ...(useSearch ? { tools: [{ type: "google_search" }] } : {}),
-  } as any);
-  const text = interaction?.output_text || "";
+    contents: combined,
+    ...(useSearch ? { config: { tools: [{ googleSearch: {} }] } } : {}),
+  });
+  const text = response.text || "";
   if (!text) throw new Error("Gemini returned an empty response.");
   return { mode: "live", provider: "gemini", model: process.env.GEMINI_MODEL || "gemini-3.6-flash", stage, output: parseJSON(text) };
 }
