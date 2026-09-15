@@ -13,6 +13,11 @@ export async function GET() {
       databaseError = e?.message || "Database connection failed";
     }
   }
+  const requestedImageProvider = String(process.env.IMAGE_PROVIDER || process.env.AI_PROVIDER || "").toLowerCase();
+  const imageProvider = requestedImageProvider === "openai" || requestedImageProvider === "gemini"
+    ? requestedImageProvider
+    : (process.env.GEMINI_API_KEY ? "gemini" : "openai");
+
   return NextResponse.json({
     ok: true,
     service: "creative-os-local-v7",
@@ -20,8 +25,8 @@ export async function GET() {
     geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
     openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
     textModel: configuredProvider() === "gemini" ? (process.env.GEMINI_MODEL || "gemini-3.6-flash") : (process.env.OPENAI_MODEL || "gpt-5.6"),
-    imageProvider: process.env.IMAGE_PROVIDER || process.env.AI_PROVIDER || (process.env.GEMINI_API_KEY ? "gemini" : "openai"),
-    imageModel: (process.env.IMAGE_PROVIDER || process.env.AI_PROVIDER) === "openai" ? (process.env.OPENAI_IMAGE_MODEL || "gpt-image-2") : (process.env.GEMINI_IMAGE_MODEL || "gemini-3.1-flash-image"),
+    imageProvider,
+    imageModel: imageProvider === "openai" ? (process.env.OPENAI_IMAGE_MODEL || "gpt-image-2") : (process.env.GEMINI_IMAGE_MODEL || "gemini-3.1-flash-image"),
     databaseConfigured: hasDatabase(),
     databaseOk,
     databaseError,
