@@ -36,11 +36,12 @@ export async function generateEnvironment(prompt: string, negativePrompt?: strin
     const key = process.env.GEMINI_API_KEY;
     if (!key) throw new Error("GEMINI_API_KEY is required for Gemini image production.");
     const ai = new GoogleGenAI({ apiKey: key });
-    const interaction: any = await ai.interactions.create({
+    const response = await ai.models.generateContent({
       model: process.env.GEMINI_IMAGE_MODEL || "gemini-3.1-flash-image",
-      input: fullPrompt,
-    } as any);
-    const data = interaction?.output_image?.data;
+      contents: fullPrompt,
+      config: { responseModalities: ["IMAGE"] },
+    });
+    const data = response.data;
     if (!data) throw new Error("Gemini image generation returned no image payload.");
     return Buffer.from(data, "base64");
   }
