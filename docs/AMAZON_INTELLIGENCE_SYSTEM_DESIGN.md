@@ -1,0 +1,1 @@
+$(cat /tmp/claude-0/-home-user/98001ef5-7f18-51c9-82fd-b7e559cf5594/scratchpad/AMAZON_INTELLIGENCE_SYSTEM_DESIGN.md)
